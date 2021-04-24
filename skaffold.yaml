@@ -1,0 +1,6 @@
+apiVersion: skaffold/v2beta14
+kind: Config
+metadata:
+  name: canary
+requires:
+  - path: ./identity

@@ -1,0 +1,15 @@
+apiVersion: skaffold/v2beta14
+kind: Config
+metadata:
+  name: identity
+build:
+  artifacts:
+    - image: renegadelabs.io/canary/identity
+      custom:
+        buildCommand: ./gradlew :canary:identity:buildBootImage
+deploy:
+  helm:
+    releases:
+      - name: identity
+        artifactOverrides:
+          image: renegadelabs.io/canary/identity
