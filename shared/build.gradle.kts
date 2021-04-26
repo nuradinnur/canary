@@ -1,4 +1,4 @@
-this.group = "io.renegadelabs.canary"
+group = "io.renegadelabs.canary"
 
 plugins {
     java

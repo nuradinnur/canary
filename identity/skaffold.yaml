@@ -4,12 +4,41 @@ metadata:
   name: identity
 build:
   artifacts:
-    - image: renegadelabs.io/canary/identity
+    - image: renegadelabs.io/canary-identity
       custom:
-        buildCommand: ./gradlew :canary:identity:buildBootImage
+        buildCommand: >-
+          set USE_BUILDPACK=paketobuildpacks/builder:base&&
+          set USE_NATIVE_COMPILER=false&&
+          ..\gradlew bootBuildImage
+          --stacktrace
+          --console=verbose
 deploy:
   helm:
     releases:
       - name: identity
+        chartPath: .
         artifactOverrides:
-          image: renegadelabs.io/canary/identity
+          image: renegadelabs.io/canary-identity
+profiles:
+  - name: prod
+    build:
+      artifacts:
+        - image: renegadelabs.io/canary-identity
+          custom:
+            buildCommand: >-
+              set USE_BUILDPACK=paketobuildpacks/builder:tiny&&
+              set USE_NATIVE_COMPILER=true&&
+              ..\gradlew bootBuildImage
+              --stacktrace
+              --console=verbose
+      tagPolicy:
+        customTemplate:
+          template: "{{.GIT_COMMIT}}_{{.DATE_TIME}}"
+          components:
+            - name: GIT_COMMIT
+              gitCommit:
+                variant: AbbrevCommitSha
+            - name: DATE_TIME
+              dateTime:
+                format: "2006-01-02_15-04-05"
+                timezone: "UTC"

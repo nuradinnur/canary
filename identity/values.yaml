@@ -4,9 +4,8 @@
 
 replicaCount: 1
 
-image:
-  repository: identity:latest
-  pullPolicy: IfNotPresent
+image: renegadelabs.io/canary-identity
+imagePullPolicy: IfNotPresent
 
 imagePullSecrets: []
 nameOverride: ""
