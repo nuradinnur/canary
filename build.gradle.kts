@@ -33,7 +33,6 @@ allprojects {
 
     apply(plugin = "org.jetbrains.kotlin.plugin.spring")
     apply(plugin = "io.spring.dependency-management")
-    apply(plugin = "org.springframework.boot")
 
     configure<DependencyManagementExtension> {
         imports {
@@ -43,9 +42,12 @@ allprojects {
 }
 
 configure(allprojects - project(":shared")) {
+    apply(plugin = "org.springframework.boot")
+
     if (useNativeCompiler) {
         apply(plugin = "org.springframework.experimental.aot")
     }
+
     tasks.withType<BootBuildImage> {
         builder = useBuildPack
         imageName = fullyQualifiedImageName
