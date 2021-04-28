@@ -1,10 +1,10 @@
 apiVersion: skaffold/v2beta14
 kind: Config
 metadata:
-  name: identity
+  name: service-starter
 build:
   artifacts:
-    - image: renegadelabs.io/canary-identity
+    - image: renegadelabs.io/canary-service-starter
       custom:
         buildCommand: >-
           set USE_BUILDPACK=paketobuildpacks/builder:base&&
@@ -15,9 +15,9 @@ build:
 deploy:
   helm:
     releases:
-      - name: identity
+      - name: service-starter
         artifactOverrides:
-          image: renegadelabs.io/canary-identity
+          image: renegadelabs.io/canary-service-starter
         chartPath: .
         createNamespace: true
         namespace: canary
@@ -25,7 +25,7 @@ profiles:
   - name: prod
     build:
       artifacts:
-        - image: renegadelabs.io/canary-identity
+        - image: renegadelabs.io/canary-service-starter
           custom:
             buildCommand: >-
               set USE_BUILDPACK=paketobuildpacks/builder:tiny&&
