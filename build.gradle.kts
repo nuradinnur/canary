@@ -13,16 +13,16 @@ val useNativeCompiler: Boolean = System.getenv("USE_NATIVE_COMPILER").toBoolean(
 
 plugins {
     idea
-    kotlin("jvm") version "1.4.32" apply false
-    kotlin("plugin.spring") version "1.4.32" apply false
-    id("com.github.ben-manes.versions") version "0.38.0"
+    kotlin("jvm") version "1.5.20" apply false
+    kotlin("plugin.spring") version "1.5.20" apply false
+    id("com.github.ben-manes.versions") version "0.39.0"
     id("io.spring.dependency-management") version "1.0.11.RELEASE" apply false
-    id("org.springframework.boot") version "2.4.5" apply false
-    id("org.springframework.experimental.aot") version "0.9.2" apply false
+    id("org.springframework.boot") version "2.5.2" apply false
+    id("org.springframework.experimental.aot") version "0.10.1" apply false
 }
 
 dependencies {
-    enforcedPlatform("org.springframework.cloud:spring-cloud-dependencies:2020.0.0-M4")
+    enforcedPlatform("org.springframework.cloud:spring-cloud-dependencies:2020.0.3")
 }
 
 allprojects {

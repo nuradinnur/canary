@@ -3,7 +3,6 @@ kind: Config
 metadata:
   name: canary
 requires:
-  - path: "./service-starter"
   - path: "./identity"
     activeProfiles:
       - name: prod
