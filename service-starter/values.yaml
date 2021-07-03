@@ -43,9 +43,9 @@ ingress:
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/rewrite-target: /$1
   hosts:
-    - host: kubernetes.docker.internal
+    - host: api.canary.local
       paths:
-        - path: /
+        - path: /service-starter
           pathType: Prefix
   tls: []
   #  - secretName: chart-example-tls
