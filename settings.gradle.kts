@@ -10,4 +10,4 @@ pluginManagement {
 
 include("shared")
 include("service-starter")
-include("identity")
+include("identities")

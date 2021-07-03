@@ -1,15 +1,15 @@
-package io.renegadelabs.canary.api.starter.identity
+package io.renegadelabs.canary.api.identities
 
 import org.springframework.boot.Banner
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.builder.SpringApplicationBuilder
 
 @SpringBootApplication
-class IdentityApplication
+class IdentitiesApplication
 
 fun main(args: Array<String>) {
     SpringApplicationBuilder()
             .bannerMode(Banner.Mode.OFF)
-            .sources(IdentityApplication::class.java)
+            .sources(IdentitiesApplication::class.java)
             .run(*args)
 }

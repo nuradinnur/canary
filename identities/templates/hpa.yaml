@@ -2,14 +2,14 @@
 apiVersion: autoscaling/v2beta1
 kind: HorizontalPodAutoscaler
 metadata:
-  name: {{ include "identity.fullname" . }}
+  name: {{ include "identities.fullname" . }}
   labels:
-    {{- include "identity.labels" . | nindent 4 }}
+    {{- include "identities.labels" . | nindent 4 }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: {{ include "identity.fullname" . }}
+    name: {{ include "identities.fullname" . }}
   minReplicas: {{ .Values.autoscaling.minReplicas }}
   maxReplicas: {{ .Values.autoscaling.maxReplicas }}
   metrics:
