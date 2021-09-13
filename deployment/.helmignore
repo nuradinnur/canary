@@ -1,7 +1,0 @@
-.git/
-.gradle/
-.idea/
-build/
-gradle/
-src/
-*.gradle.kts
