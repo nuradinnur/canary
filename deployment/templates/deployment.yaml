@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "identities.fullname" . }}
+  name: {{ include "canary-deployment.fullname" . }}
   labels:
-    {{- include "identities.labels" . | nindent 4 }}
+    {{- include "canary-deployment.labels" . | nindent 4 }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
-      {{- include "identities.selectorLabels" . | nindent 6 }}
+      {{- include "canary-deployment.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -18,17 +18,17 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "identities.selectorLabels" . | nindent 8 }}
+        {{- include "canary-deployment.selectorLabels" . | nindent 8 }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "identities.serviceAccountName" . }}
+      serviceAccountName: {{ include "canary-deployment.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
-        - name: {{ .Chart.Name }}
+        - name: {{ include "canary-deployment.name" . }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: {{ .Values.image }}
@@ -39,17 +39,15 @@ spec:
               protocol: TCP
           livenessProbe:
             httpGet:
-              path: /{{ .Chart.Name }}/actuator/health/liveness
+              path: /{{ include "canary-deployment.name" . }}/actuator/health/liveness
               port: http
             failureThreshold: 3
-            initialDelaySeconds: 10
             periodSeconds: 10
           readinessProbe:
             httpGet:
-              path: /{{ .Chart.Name }}/actuator/health/readiness
+              path: /{{ include "canary-deployment.name" . }}/actuator/health/readiness
               port: http
             failureThreshold: 3
-            initialDelaySeconds: 10
             periodSeconds: 10
           resources:
             {{- toYaml .Values.resources | nindent 12 }}

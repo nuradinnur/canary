@@ -2,14 +2,14 @@
 apiVersion: autoscaling/v2beta1
 kind: HorizontalPodAutoscaler
 metadata:
-  name: {{ include "service-starter.fullname" . }}
+  name: {{ include "canary-deployment.fullname" . }}
   labels:
-    {{- include "service-starter.labels" . | nindent 4 }}
+    {{- include "canary-deployment.labels" . | nindent 4 }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: {{ include "service-starter.fullname" . }}
+    name: {{ include "canary-deployment.fullname" . }}
   minReplicas: {{ .Values.autoscaling.minReplicas }}
   maxReplicas: {{ .Values.autoscaling.maxReplicas }}
   metrics:

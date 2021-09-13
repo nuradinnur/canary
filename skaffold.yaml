@@ -3,7 +3,7 @@ kind: Config
 metadata:
   name: canary
 requires:
-- path: ./identities
+- path: ./deployment/applications/identities
   activeProfiles:
   - name: prod
     activatedBy:

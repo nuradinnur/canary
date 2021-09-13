@@ -1,6 +1,0 @@
-apiVersion: v2
-name: service-starter
-description: An service-starter manager for the Canary platform
-type: application
-version: 1.0.0
-appVersion: "1.0.0"
