@@ -13,6 +13,8 @@ dependencies {
     api("io.projectreactor.kotlin:reactor-kotlin-extensions")
     api("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
     api("org.springframework.boot:spring-boot-starter-actuator")
+//    api("org.springframework.cloud:spring-cloud-starter-kubernetes-client")
+    api("io.github.microutils:kotlin-logging:2.0.11")
     testApi("org.springframework.boot:spring-boot-starter-test")
     testApi("io.projectreactor:reactor-test")
 }

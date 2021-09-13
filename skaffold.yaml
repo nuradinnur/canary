@@ -1,11 +1,12 @@
-apiVersion: skaffold/v2beta14
+apiVersion: skaffold/v2beta22
 kind: Config
 metadata:
   name: canary
 requires:
-  - path: "./identities"
-    activeProfiles:
-      - name: prod
-        activatedBy: [ prod ]
-profiles:
+- path: ./identities
+  activeProfiles:
   - name: prod
+    activatedBy:
+    - prod
+profiles:
+- name: prod

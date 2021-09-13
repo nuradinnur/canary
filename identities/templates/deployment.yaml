@@ -39,15 +39,17 @@ spec:
               protocol: TCP
           livenessProbe:
             httpGet:
-              path: /actuator/health/liveness
+              path: /{{ .Chart.Name }}/actuator/health/liveness
               port: http
             failureThreshold: 3
+            initialDelaySeconds: 10
             periodSeconds: 10
           readinessProbe:
             httpGet:
-              path: /actuator/health/liveness
+              path: /{{ .Chart.Name }}/actuator/health/readiness
               port: http
             failureThreshold: 3
+            initialDelaySeconds: 10
             periodSeconds: 10
           resources:
             {{- toYaml .Values.resources | nindent 12 }}

@@ -4,12 +4,17 @@ import org.springframework.boot.Banner
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.builder.SpringApplicationBuilder
 
-@SpringBootApplication
+@SpringBootApplication(
+    scanBasePackages = [
+        "io.renegadelabs.canary.api.shared",
+        "io.renegadelabs.canary.api.identities"
+    ]
+)
 class IdentitiesApplication
 
 fun main(args: Array<String>) {
     SpringApplicationBuilder()
-            .bannerMode(Banner.Mode.OFF)
-            .sources(IdentitiesApplication::class.java)
-            .run(*args)
+        .bannerMode(Banner.Mode.OFF)
+        .sources(IdentitiesApplication::class.java)
+        .run(*args)
 }
