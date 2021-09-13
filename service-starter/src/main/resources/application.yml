@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: service-starter
+  webflux:
+    base-path: /service-starter
+management:
+  health:
+    livenessState:
+      enabled: true
+    readinessState:
+      enabled: true
