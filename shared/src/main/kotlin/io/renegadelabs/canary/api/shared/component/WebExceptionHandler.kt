@@ -19,11 +19,10 @@ import reactor.core.publisher.Mono
 @Component
 class WebExceptionHandler(
     errorAttributes: ErrorAttributes,
-    resources: WebProperties.Resources,
     applicationContext: ApplicationContext,
     serverCodecConfigurer: ServerCodecConfigurer,
     @Value("\${spring.webflux.base-path}") private val contextPath: String
-) : AbstractErrorWebExceptionHandler(errorAttributes, resources, applicationContext) {
+) : AbstractErrorWebExceptionHandler(errorAttributes, WebProperties.Resources(), applicationContext) {
     
     init {
         this.setMessageReaders(serverCodecConfigurer.readers)

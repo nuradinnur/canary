@@ -4,7 +4,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.springframework.boot.gradle.tasks.bundling.BootBuildImage
 
 group = "io.renegadelabs"
-version = "1.0.0"
+version = "0.0.1"
 
 val fullyQualifiedImageName: String = System.getenv("IMAGE") ?: "renegadelabs.io/canary-${project.name}:latest"
 val useBuildPack: String = System.getenv("USE_BUILDPACK") ?: "paketobuildpacks/builder:full"
@@ -13,17 +13,16 @@ val useNativeCompiler: Boolean = System.getenv("USE_NATIVE_COMPILER").toBoolean(
 
 plugins {
     idea
-    kotlin("jvm") version "1.5.30" apply false
-    kotlin("plugin.spring") version "1.5.30" apply false
-    id("com.github.ben-manes.versions") version "0.39.0"
-    id("io.spring.dependency-management") version "1.0.11.RELEASE" apply false
-    id("org.springframework.boot") version "2.5.4" apply false
-    id("org.springframework.experimental.aot") version "0.10.3" apply false
+    kotlin("jvm") version "1.7.10" apply false
+    kotlin("plugin.spring") version "1.7.10" apply false
+    id("com.github.ben-manes.versions") version "0.44.0"
+    id("io.spring.dependency-management") version "1.1.0" apply false
+    id("org.springframework.boot") version "3.0.0" apply false
+    id("org.graalvm.buildtools.native") version "0.9.14" apply false
 }
 
 allprojects {
     repositories {
-        maven { url = uri("https://repo.spring.io/release") }
         mavenCentral()
     }
 
@@ -33,36 +32,17 @@ allprojects {
     configure<DependencyManagementExtension> {
         imports {
             mavenBom(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES)
-            mavenBom("org.springframework.cloud:spring-cloud-dependencies:2020.0.3")
+            mavenBom("org.springframework.cloud:spring-cloud-dependencies:2021.0.5")
         }
     }
 }
 
 configure(allprojects - project(":shared")) {
     apply(plugin = "org.springframework.boot")
-
-    if (useNativeCompiler) {
-        apply(plugin = "org.springframework.experimental.aot")
-    }
-
-    tasks.withType<BootBuildImage> {
-        builder = useBuildPack
-        imageName = fullyQualifiedImageName
-        isPublish = pushImageToRepository
-        isVerboseLogging = true
-        environment = mapOf(
-            "BP_NATIVE_IMAGE" to useNativeCompiler.toString(),
-            "BP_NATIVE_IMAGE_BUILD_ARGUMENTS" to listOf(
-                "-H:+AddAllCharsets",
-                "-H:+ReportExceptionStackTraces",
-                "--verbose"
-            ).joinToString(separator = " ")
-        )
-    }
 }
 
 tasks.withType<Wrapper> {
-    gradleVersion = "7.2"
+    gradleVersion = "7.6"
 }
 
 tasks.withType<DependencyUpdatesTask> {
@@ -87,4 +67,20 @@ tasks.withType<KotlinCompile> {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+tasks.withType<BootBuildImage> {
+    builder.set(useBuildPack)
+    imageName.set(fullyQualifiedImageName)
+    publish.set(pushImageToRepository)
+    verboseLogging.set(true)
+    environment.set(mapOf(
+        "BP_JVM_VERSION" to "17",
+        "BP_NATIVE_IMAGE" to useNativeCompiler.toString(),
+        "BP_NATIVE_IMAGE_BUILD_ARGUMENTS" to listOf(
+            "-H:+AddAllCharsets",
+            "-H:+ReportExceptionStackTraces",
+            "--verbose"
+        ).joinToString(separator = " ")
+    ))
 }

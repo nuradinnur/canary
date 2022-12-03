@@ -1,50 +1,54 @@
-apiVersion: skaffold/v2beta22
+apiVersion: skaffold/v3
 kind: Config
 metadata:
   name: identities
 build:
   artifacts:
-  - image: renegadelabs.io/canary-identities
-    custom:
-      buildCommand:
-        set USE_BUILDPACK=paketobuildpacks/builder:base&&
-        set USE_NATIVE_COMPILER=false&&
-        ..\..\..\gradlew -p ../../../identities bootBuildImage --stacktrace --console=verbose
-      dependencies:
-        paths:
-        - ../../../identities/src/main/**
-        - ../../../shared/src/main/**
+    - image: renegadelabs.io/canary-identities
+      custom:
+        buildCommand:
+          USE_BUILDPACK=paketobuildpacks/builder:base
+          set USE_NATIVE_COMPILER=false
+          ../../../gradlew bootBuildImage
+          -p ../../../identities
+          --stacktrace
+          --console=verbose
+        dependencies:
+          paths:
+            - ../../../identities/src/main/**
+            - ../../../shared/src/main/**
 deploy:
   helm:
     releases:
-    - name: identities
-      chartPath: ../../
-      artifactOverrides:
-        image: renegadelabs.io/canary-identities
-      namespace: canary
-      createNamespace: true
-      valuesFiles:
-      - ./values-common.yaml
-      - ./values-dev.yaml
+      - name: identities
+        chartPath: ../../
+        valuesFiles:
+          - ./values-common.yaml
+          - ./values-dev.yaml
+        namespace: canary
+        createNamespace: true
 profiles:
-- name: prod
-  patches:
-  - op: replace
-    path: /build/artifacts/0/custom/buildCommand
-    value:
-      set USE_BUILDPACK=paketobuildpacks/builder:tiny&&
-      set USE_NATIVE_COMPILER=true&&
-      ..\..\..\gradlew -p ../../../identities bootBuildImage --stacktrace --console=verbose
-  - op: add
-    path: /build/artifacts/0/tagPolicy
-    value:
-      customTemplate:
-        template: '{{.GIT_COMMIT}}_{{.DATE_TIME}}'
-        components:
-        - name: GIT_COMMIT
-          gitCommit:
-            variant: AbbrevCommitSha
-        - name: DATE_TIME
-          dateTime:
-            format: 2006-01-02_15-04-05
-            timezone: UTC
+  - name: prod
+    patches:
+      - op: replace
+        path: /build/artifacts/0/custom/buildCommand
+        value:
+          USE_BUILDPACK=paketobuildpacks/builder:tiny
+          USE_NATIVE_COMPILER=true
+          ../../../gradlew bootBuildImage
+          -p ../../../identities
+          --stacktrace
+          --console=verbose
+      - op: add
+        path: /build/artifacts/0/tagPolicy
+        value:
+          customTemplate:
+            components:
+              - gitCommit:
+                  variant: AbbrevCommitSha
+                name: GIT_COMMIT
+              - dateTime:
+                  format: 2006-01-02_15-04-05
+                  timezone: UTC
+                name: DATE_TIME
+            template: '{{.GIT_COMMIT}}_{{.DATE_TIME}}'

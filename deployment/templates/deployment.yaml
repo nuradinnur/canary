@@ -41,14 +41,16 @@ spec:
             httpGet:
               path: /{{ include "canary-deployment.name" . }}/actuator/health/liveness
               port: http
+            initialDelaySeconds: 30
             failureThreshold: 3
-            periodSeconds: 10
+            periodSeconds: 5
           readinessProbe:
             httpGet:
               path: /{{ include "canary-deployment.name" . }}/actuator/health/readiness
               port: http
+            initialDelaySeconds: 30
             failureThreshold: 3
-            periodSeconds: 10
+            periodSeconds: 5
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
