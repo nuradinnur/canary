@@ -1,11 +1,16 @@
 rootProject.name = "canary"
 
+dependencyResolutionManagement {
+    repositories {
+        mavenCentral()
+    }
+}
+
 pluginManagement {
-	repositories {
-		maven { url = uri("https://repo.spring.io/release") }
-		mavenCentral()
-		gradlePluginPortal()
-	}
+    repositories {
+        mavenCentral()
+        gradlePluginPortal()
+    }
 }
 
 include("shared")

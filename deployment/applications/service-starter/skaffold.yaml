@@ -8,7 +8,7 @@ build:
       custom:
         buildCommand:
           USE_BUILDPACK=paketobuildpacks/builder:base
-          set USE_NATIVE_COMPILER=false
+          USE_NATIVE_COMPILER=false
           ../../../gradlew bootBuildImage
           -p ../../../service-starter
           --stacktrace
@@ -24,7 +24,6 @@ deploy:
         chartPath: ../../
         valuesFiles:
           - ./values-common.yaml
-          - ./values-dev.yaml
         namespace: canary
         createNamespace: true
 profiles:
@@ -34,7 +33,7 @@ profiles:
         path: /build/artifacts/0/custom/buildCommand
         value:
           USE_BUILDPACK=paketobuildpacks/builder:tiny
-          set USE_NATIVE_COMPILER=true
+          USE_NATIVE_COMPILER=true
           ../../../gradlew bootBuildImage
           -p ../../../service-starter
           --stacktrace

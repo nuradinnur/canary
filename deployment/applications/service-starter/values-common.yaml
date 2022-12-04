@@ -1,7 +1,3 @@
-# Default values for deployment.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
-
 image: renegadelabs.io/canary-service-starter
 imagePullPolicy: IfNotPresent
 
@@ -10,12 +6,8 @@ nameOverride: "service-starter"
 fullnameOverride: ""
 
 serviceAccount:
-  # Specifies whether a service account should be created
   create: true
-  # Annotations to add to the service account
   annotations: {}
-  # The name of the service account to use.
-  # If not set and create is true, a name is generated using the fullname template
   name: ""
 
 podAnnotations: {}
@@ -25,3 +17,34 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+replicaCount: 1
+
+podSecurityContext: {}
+
+securityContext: {}
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: nginx
+  hosts:
+    - host: api.canary.local
+      paths:
+        - path: /service-starter
+          pathType: Prefix
+
+resources:
+  limits:
+    cpu: 1000m
+    memory: 1024Mi
+  requests:
+    cpu: 500m
+    memory: 512Mi
+
+autoscaling:
+  enabled: false
