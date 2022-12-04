@@ -6,9 +6,16 @@ import com.fasterxml.jackson.databind.SerializationFeature
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder
+import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity
+import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity
+import org.springframework.security.config.web.server.ServerHttpSecurity
+import org.springframework.security.web.server.SecurityWebFilterChain
+import org.springframework.web.reactive.config.CorsRegistry
 import org.springframework.web.reactive.config.WebFluxConfigurer
 
 @Configuration
+@EnableWebFluxSecurity
+@EnableReactiveMethodSecurity
 class WebFluxConfiguration : WebFluxConfigurer {
 
     @Bean
@@ -22,5 +29,24 @@ class WebFluxConfiguration : WebFluxConfigurer {
             .featuresToDisable(
                 SerializationFeature.WRITE_DATES_AS_TIMESTAMPS
             )
+    }
+
+    @Bean
+    fun securityWebFilterChain(http: ServerHttpSecurity): SecurityWebFilterChain {
+        return http
+            .httpBasic().disable()
+            .formLogin().disable()
+            .csrf().disable()
+            .authorizeExchange()
+            .anyExchange().authenticated()
+            .and().build()
+    }
+
+    override fun addCorsMappings(registry: CorsRegistry) {
+        registry
+            .addMapping("/**")
+            .allowedOrigins("*")
+            .allowedMethods("*")
+            .allowedHeaders("*")
     }
 }

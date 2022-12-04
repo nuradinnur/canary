@@ -1,0 +1,35 @@
+[versions]
+
+# Gradle wrapper
+wrapper = "7.6"
+
+# Plugins
+kotlin-plugin = "1.7.10"
+versions-plugin = "0.44.0"
+spring-dependency-management-plugin = "1.1.0"
+spring-boot-plugin = "3.0.0"
+graalvm-plugin = "0.9.17"
+
+# Dependencies
+kotlin-logging = "3.0.4"
+jjwt = "0.11.5"
+
+[plugins]
+
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref="kotlin-plugin" }
+kotlin-spring = { id = "org.jetbrains.kotlin.plugin.spring", version.ref="kotlin-plugin" }
+versions = { id = "com.github.ben-manes.versions", version.ref="versions-plugin" }
+spring-dependency-management = { id = "io.spring.dependency-management", version.ref="spring-dependency-management-plugin" }
+spring-boot = { id = "org.springframework.boot", version.ref="spring-boot-plugin" }
+graalvm = { id = "org.graalvm.buildtools.native", version.ref="graalvm-plugin" }
+
+[libraries]
+
+kotlin-logging = { module = "io.github.microutils:kotlin-logging", version.ref = "kotlin-logging" }
+jjwt-api = { module = "io.jsonwebtoken:jjwt-api", version.ref = "jjwt" }
+jjwt-impl = { module = "io.jsonwebtoken:jjwt-api", version.ref = "jjwt" }
+jjwt-jackson = { module = "io.jsonwebtoken:jjwt-api", version.ref = "jjwt" }
+
+[bundles]
+
+jjwt = [ "jjwt-api", "jjwt-impl", "jjwt-jackson" ]

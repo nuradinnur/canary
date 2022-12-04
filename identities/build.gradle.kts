@@ -1,9 +1,5 @@
 group = "io.renegadelabs.canary.api"
-
-plugins {
-    java
-    kotlin("jvm")
-}
+version = "0.0.1"
 
 dependencies {
     implementation(project(":shared"))
