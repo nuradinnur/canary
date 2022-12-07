@@ -15,9 +15,9 @@ class TestClaimsExtensions: BehaviorSpec({
             "ARA8i0BJ03eEVxL1MMzGOlzal5UfwHJ5q_cSvQ"
     val validClaims: Claims = JsonWebTokenUtils.toClaims(jsonWebToken)
 
-    given("I have valid claims") {
+    given("valid claims") {
         `when`("I want its authorities") {
-            then("The authorities should be parsed successfully") {
+            then("it should be parsed successfully") {
                 val result = validClaims.getAuthorities()
                 result.shouldNotBeNull()
                 result.shouldBeInstanceOf<Collection<String>>()

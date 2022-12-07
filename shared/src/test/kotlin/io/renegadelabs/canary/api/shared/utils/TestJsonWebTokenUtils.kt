@@ -1,4 +1,4 @@
-package io.renegadelabs.canary.api.shared
+package io.renegadelabs.canary.api.shared.utils
 
 import io.jsonwebtoken.MalformedJwtException
 import io.kotest.assertions.throwables.shouldThrow
@@ -8,8 +8,6 @@ import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.throwable.shouldHaveMessage
 import io.kotest.matchers.types.shouldBeInstanceOf
-import io.renegadelabs.canary.api.shared.domain.Authority
-import io.renegadelabs.canary.api.shared.extensions.getAuthorities
 import io.renegadelabs.canary.api.shared.util.JsonWebTokenUtils
 import java.util.*
 
@@ -20,9 +18,9 @@ class TestJsonWebTokenUtils: BehaviorSpec({
             "ARA8i0BJ03eEVxL1MMzGOlzal5UfwHJ5q_cSvQ"
     val invalidJsonWebToken = "Bearer eyJhbGciOizdWIiOiJ0ZXN0dXNlciIs.ImlzcyI6ImNhbmFyeSNDQ0ODE1fQ.IZyQaKuf0Z43ISOsBB0AJhNMe7Og"
 
-    given("I have a valid JSON web token") {
+    given("a valid JSON web token") {
         `when`("I want its claims") {
-            then("The claims should be parsed successfully") {
+            then("it should be parsed successfully") {
                 val result = JsonWebTokenUtils.toClaims(validJsonWebToken)
                 println(result)
                 result.shouldNotBeNull()
@@ -35,9 +33,9 @@ class TestJsonWebTokenUtils: BehaviorSpec({
             }
         }
     }
-    given("I have an invalid JSON web token") {
+    given("an invalid JSON web token") {
         `when`("I want its claims") {
-            then("It should throw an exception") {
+            then("it should throw an exception") {
                 val exception = shouldThrow<MalformedJwtException> {
                     JsonWebTokenUtils.toClaims(invalidJsonWebToken)
                 }

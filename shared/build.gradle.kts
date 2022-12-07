@@ -34,6 +34,6 @@ dependencies {
      */
     testImplementation(libs.kotest)
     testImplementation(libs.kotest.spring)
-    testApi("org.springframework.boot:spring-boot-starter-test")
-    testApi("io.projectreactor:reactor-test")
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("io.projectreactor:reactor-test")
 }
