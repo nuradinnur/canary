@@ -8,9 +8,11 @@ kotlin-plugin = "1.7.10"
 versions-plugin = "0.44.0"
 spring-dependency-management-plugin = "1.1.0"
 spring-boot-plugin = "3.0.0"
-graalvm-plugin = "0.9.17"
+graalvm-plugin = "0.9.19"
 
 # Dependencies
+kotest = "5.5.4"
+kotest-spring = "1.1.2"
 kotlin-logging = "3.0.4"
 jjwt = "0.11.5"
 
@@ -25,10 +27,12 @@ graalvm = { id = "org.graalvm.buildtools.native", version.ref="graalvm-plugin" }
 
 [libraries]
 
+kotest = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest" }
+kotest-spring = { module = "io.kotest.extensions:kotest-extensions-spring", version.ref = "kotest-spring" }
 kotlin-logging = { module = "io.github.microutils:kotlin-logging", version.ref = "kotlin-logging" }
 jjwt-api = { module = "io.jsonwebtoken:jjwt-api", version.ref = "jjwt" }
-jjwt-impl = { module = "io.jsonwebtoken:jjwt-api", version.ref = "jjwt" }
-jjwt-jackson = { module = "io.jsonwebtoken:jjwt-api", version.ref = "jjwt" }
+jjwt-impl = { module = "io.jsonwebtoken:jjwt-impl", version.ref = "jjwt" }
+jjwt-jackson = { module = "io.jsonwebtoken:jjwt-jackson", version.ref = "jjwt" }
 
 [bundles]
 
