@@ -5,7 +5,6 @@ import io.renegadelabs.canary.api.shared.domain.Authority
 import io.renegadelabs.canary.api.shared.util.JsonWebTokenUtils
 import java.time.Instant
 import java.util.*
-import kotlin.collections.ArrayList
 
 fun Claims.getAuthorities(): Set<Authority> {
     return this.get("authorities", ArrayList::class.java)
