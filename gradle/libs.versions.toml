@@ -15,6 +15,7 @@ kotest = "5.5.4"
 kotest-spring = "1.1.2"
 kotlin-logging = "3.0.4"
 jjwt = "0.11.5"
+bouncy-castle = "1.70"
 
 [plugins]
 
@@ -33,6 +34,7 @@ kotlin-logging = { module = "io.github.microutils:kotlin-logging", version.ref =
 jjwt-api = { module = "io.jsonwebtoken:jjwt-api", version.ref = "jjwt" }
 jjwt-impl = { module = "io.jsonwebtoken:jjwt-impl", version.ref = "jjwt" }
 jjwt-jackson = { module = "io.jsonwebtoken:jjwt-jackson", version.ref = "jjwt" }
+bc-provider = { module = "org.bouncycastle:bcprov-jdk15on", version.ref = "bouncy-castle" }
 
 [bundles]
 

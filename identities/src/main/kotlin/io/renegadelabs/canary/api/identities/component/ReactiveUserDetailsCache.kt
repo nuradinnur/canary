@@ -12,5 +12,5 @@ interface ReactiveUserDetailsCache {
 
     fun putUserDetails(user: UserDetails): Mono<Void>
 
-    fun removeUserDetails(username: String): Mono<Void>
+    fun removeUserDetails(username: String): Mono<Boolean>
 }

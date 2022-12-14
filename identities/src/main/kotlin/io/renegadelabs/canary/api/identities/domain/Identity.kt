@@ -4,7 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 
-data class User(
+data class Identity(
+    private val id: Long,
     private val username: String,
     @JsonIgnore private val password: String,
     private val authorities: Set<GrantedAuthority>,
@@ -15,15 +16,17 @@ data class User(
 ) : UserDetails {
 
     companion object {
-        fun create(username: String,
+        fun create(id: Long = 0,
+                   username: String,
                    password: String,
                    authorities: Set<GrantedAuthority> = HashSet(),
                    expired: Boolean = false,
                    locked: Boolean = false,
                    passwordExpired: Boolean = false,
-                   enabled: Boolean = false): User {
+                   enabled: Boolean = true): Identity {
 
-            return User(
+            return Identity(
+                id = id,
                 username = username,
                 password = password,
                 authorities = authorities,
@@ -33,6 +36,10 @@ data class User(
                 enabled = enabled
             )
         }
+    }
+
+    fun getId(): Long {
+        return this.id
     }
 
     override fun getUsername(): String {

@@ -1,12 +1,13 @@
 package io.renegadelabs.canary.api.identities.component
 
+import org.springframework.context.MessageSourceAware
 import org.springframework.security.core.userdetails.UserDetails
 import reactor.core.publisher.Mono
 
 /**
  * @see org.springframework.security.core.userdetails.UserDetailsChecker
  */
-interface ReactiveUserDetailsValidator {
+interface ReactiveUserDetailsChecker: MessageSourceAware {
     
-    fun validate(toCheck: UserDetails): Mono<Void>
+    fun validate(userDetails: UserDetails): Mono<Void>
 }

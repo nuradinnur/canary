@@ -26,8 +26,11 @@ dependencies {
      */
     api("org.springframework.boot:spring-boot-starter-webflux")
     api("org.springframework.boot:spring-boot-starter-actuator")
+    api("org.springframework.boot:spring-boot-starter-cache")
     api("org.springframework.boot:spring-boot-starter-security")
+    api("com.github.ben-manes.caffeine:caffeine")
     api(libs.bundles.jjwt)
+    api(libs.bc.provider)
 
     /**
      * Test dependencies
