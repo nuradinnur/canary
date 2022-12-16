@@ -44,13 +44,13 @@ class WebExceptionHandler(
             )
         )
 
-        val responseStatus = HttpStatus.valueOf(errorAttributes["status"] as Int)
+        val responseStatus = errorAttributes["status"] as HttpStatus
 
         val responseMap = mapOf(
             "timestamp" to errorAttributes["timestamp"],
             "path" to "${this.contextPath}${errorAttributes["path"]}",
             "status" to responseStatus.value(),
-            "error" to errorAttributes["error"],
+            "message" to if (responseStatus != HttpStatus.INTERNAL_SERVER_ERROR) errorAttributes["message"] else null,
             "requestId" to errorAttributes["requestId"]
         )
 

@@ -8,5 +8,5 @@ interface SessionService: MessageSourceAware {
 
     fun createSession(username: String, password: String): Mono<Session>
 
-    fun refreshSession(jsonWebToken: String): Mono<Session>
+    fun refreshSession(refreshToken: String): Mono<Session>
 }

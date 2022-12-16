@@ -11,7 +11,6 @@ import org.springframework.context.MessageSource
 import org.springframework.context.annotation.Primary
 import org.springframework.context.support.MessageSourceAccessor
 import org.springframework.security.core.userdetails.UserDetails
-import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
@@ -39,14 +38,13 @@ class IdentityServiceImpl(
                     password = passwordEncoder.encode(password),
                     authorities = setOf(Authorities.USER)
                 )
-            }
-            .flatMap { this.updateUserDetails(it) }
+            }.flatMap { this.updateUserDetails(it) }
     }
 
     override fun getIdentityById(id: Long): Mono<Identity> {
         return Mono.justOrEmpty(
             this.database.firstNotNullOfOrNull {
-                it.value.takeIf { identity -> identity.getId() == id }
+                it.value.takeIf { identity -> identity.id == id }
             })
             .switchIfEmpty(Mono.error(IdentityNotFoundException(this.messages.getMessage("exceptions.identity-not-found"))))
     }
@@ -54,6 +52,7 @@ class IdentityServiceImpl(
     @Suppress("DEPRECATION")
     override fun getIdentityByUsername(username: String): Mono<Identity> {
         return this.findByUsername(username).cast(Identity::class.java)
+
     }
 
     override fun updateIdentity(identity: Identity): Mono<Void> {
@@ -72,15 +71,9 @@ class IdentityServiceImpl(
     )
     override fun findByUsername(username: String): Mono<UserDetails> {
         return this.reactiveUserDetailsCache.getUserDetails(username)
-            .switchIfEmpty(this.database[username].toMono().flatMap { userDetails ->
-                this.reactiveUserDetailsCache.putUserDetails(userDetails).then(Mono.just(userDetails))
-            }).switchIfEmpty(
-                Mono.error(
-                    UsernameNotFoundException(
-                        this.messages.getMessage("exceptions.identity-not-found", arrayOf(username))
-                    )
-                )
-            )
+            .switchIfEmpty(Mono.defer { this.database[username].toMono() })
+            .switchIfEmpty(Mono.error(IdentityNotFoundException(this.messages.getMessage("exceptions.identity-not-found", arrayOf(username)))))
+            .flatMap { userDetails -> this.reactiveUserDetailsCache.putUserDetails(userDetails).then(Mono.just(userDetails)) }
     }
 
     override fun setMessageSource(messageSource: MessageSource) {
@@ -89,7 +82,7 @@ class IdentityServiceImpl(
 
     private fun updateUserDetails(userDetails: UserDetails): Mono<Void> {
         return this.reactiveUserDetailsChecker.validate(userDetails)
-            .then(this.database.put(userDetails.username, userDetails as Identity).toMono())
+            .then(Mono.defer { this.database.put(userDetails.username, userDetails as Identity).toMono() })
             .then(this.reactiveUserDetailsCache.putUserDetails(userDetails))
     }
 }

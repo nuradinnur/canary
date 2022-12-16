@@ -7,16 +7,14 @@ import io.renegadelabs.canary.api.shared.util.JwsUtils
 import org.springframework.security.authentication.AbstractAuthenticationToken
 
 data class JwsAuthenticationToken(
-    private val token: Jws<Claims>
+    val token: Jws<Claims>
 ) : AbstractAuthenticationToken(token.getAuthorities()) {
 
-    constructor(token: String) : this(JwsUtils.toJws(token))
-
     override fun getCredentials(): String {
-        return token.signature
+        return this.token.signature
     }
 
     override fun getPrincipal(): String {
-        return token.body.subject
+        return this.token.body.subject
     }
 }

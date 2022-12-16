@@ -1,6 +1,7 @@
 package io.renegadelabs.canary.api.identities.component.impl
 
 import io.renegadelabs.canary.api.identities.component.ReactiveUserDetailsChecker
+import io.renegadelabs.canary.api.identities.domain.Identity
 import org.springframework.context.MessageSource
 import org.springframework.context.support.MessageSourceAccessor
 import org.springframework.security.authentication.AccountExpiredException

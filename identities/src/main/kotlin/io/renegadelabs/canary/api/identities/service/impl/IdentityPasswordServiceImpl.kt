@@ -24,6 +24,7 @@ class IdentityPasswordServiceImpl(
 
     override fun validatePassword(username: String, password: String): Mono<Void> {
         return this.identityService.getIdentityByUsername(username)
+            .onErrorMap { error -> BadCredentialsException(this.messages.getMessage("exceptions.bad-credentials"), error) }
             .map { this.passwordEncoder.matches(password, it.password) }
             .filter { matches -> matches }
             .switchIfEmpty(Mono.error(BadCredentialsException(this.messages.getMessage("exceptions.bad-credentials"))))

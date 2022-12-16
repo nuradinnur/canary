@@ -37,7 +37,7 @@ tasks.withType<DependencyUpdatesTask> {
         val stableKeyword = listOf("RELEASE", "FINAL", "GA").any { version.toUpperCase().contains(it) }
         val regex = "^[0-9,.v-]+(-r)?$".toRegex()
         val isStable = stableKeyword || regex.matches(version)
-        return isStable.not()
+        return !isStable
     }
 
     rejectVersionIf {
@@ -60,6 +60,10 @@ configure(subprojects) {
 
     tasks.withType<Test> {
         useJUnitPlatform()
+
+        // Ensure that BlockHound tests run on JDK 13+. For details, see:
+        // https://github.com/reactor/BlockHound/issues/33
+        jvmArgs?.add("-XX:+AllowRedefinitionToAddDeleteMethods")
     }
 
     configure<DependencyManagementExtension> {

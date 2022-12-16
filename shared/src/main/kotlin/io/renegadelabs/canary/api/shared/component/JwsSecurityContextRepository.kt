@@ -1,6 +1,7 @@
 package io.renegadelabs.canary.api.shared.component
 
 import io.renegadelabs.canary.api.shared.domain.JwsAuthenticationToken
+import io.renegadelabs.canary.api.shared.util.JwsUtils
 import org.springframework.http.HttpHeaders
 import org.springframework.security.authentication.ReactiveAuthenticationManager
 import org.springframework.security.core.context.SecurityContext
@@ -21,10 +22,10 @@ class JwsSecurityContextRepository(
 
     override fun load(exchange: ServerWebExchange): Mono<SecurityContext> {
         return Mono.justOrEmpty(exchange.request.headers.getFirst(HttpHeaders.AUTHORIZATION))
-            .flatMap { header ->
-                val token = JwsAuthenticationToken(header)
-                this.reactiveAuthenticationManager.authenticate(token)
-                    .map { SecurityContextImpl(it) }
-            }
+            .map { JwsUtils.toJws(it) }
+            .onErrorResume { Mono.empty() }
+            .map { JwsAuthenticationToken(it) }
+            .flatMap { this.reactiveAuthenticationManager.authenticate(it) }
+            .map { SecurityContextImpl(it) }
     }
 }

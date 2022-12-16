@@ -29,8 +29,12 @@ dependencies {
     api("org.springframework.boot:spring-boot-starter-cache")
     api("org.springframework.boot:spring-boot-starter-security")
     api("com.github.ben-manes.caffeine:caffeine")
+    implementation(libs.bc.provider)
+
+    /**
+     * Other dependencies
+     */
     api(libs.bundles.jjwt)
-    api(libs.bc.provider)
 
     /**
      * Test dependencies
@@ -39,4 +43,7 @@ dependencies {
     testImplementation(libs.kotest.spring)
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("io.projectreactor:reactor-test")
+    // Not usable until the following PR is merged to integrate Kotest with BlockHound
+    // https://github.com/kotest/kotest/issues/3308
+    // testImplementation(libs.bundles.blockhound)
 }

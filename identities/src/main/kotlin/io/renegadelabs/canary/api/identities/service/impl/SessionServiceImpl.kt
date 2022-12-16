@@ -26,17 +26,17 @@ class SessionServiceImpl(
 
     override fun createSession(username: String, password: String): Mono<Session> {
         return this.identityPasswordService.validatePassword(username, password)
-            .then(this.identityService.findByUsername(username))
-            .map { userDetails -> Session(
-                this.createToken(userDetails.username, userDetails.authorities.toSet(), Duration.ofMinutes(15)),
-                this.createToken(userDetails.username, setOf(Authorities.REFRESH), Duration.ofHours(1))
+            .then(this.identityService.getIdentityByUsername(username))
+            .map { identity -> Session(
+                this.createToken(identity.username, identity.authorities.toSet(), Duration.ofMinutes(15)),
+                this.createToken(identity.username, setOf(Authorities.REFRESH), Duration.ofHours(1))
             )}
     }
 
-    override fun refreshSession(jsonWebToken: String): Mono<Session> {
-        return this.identityService.getIdentityByUsername(JwsUtils.toSubject(jsonWebToken))
+    override fun refreshSession(refreshToken: String): Mono<Session> {
+        return this.identityService.getIdentityByUsername(JwsUtils.toSubject(refreshToken))
             .map { this.createToken(it.username, it.authorities.toSet(), Duration.ofMinutes(15)) }
-            .map { Session(it, jsonWebToken) }
+            .map { Session(it, refreshToken) }
     }
 
     override fun setMessageSource(messageSource: MessageSource) {
@@ -57,6 +57,7 @@ class SessionServiceImpl(
 
         return Jwts.builder()
             .setClaims(claims)
+            .signWith(JwsUtils.SIGNING_KEY)
             .compact()
     }
 }
