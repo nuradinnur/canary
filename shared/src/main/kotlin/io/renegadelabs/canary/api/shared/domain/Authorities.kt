@@ -5,7 +5,8 @@ import org.springframework.security.core.GrantedAuthority
 enum class Authorities(private val authority: String): GrantedAuthority {
     REFRESH("REFRESH"),
     USER("USER"),
-    ADMINISTRATOR("ADMINISTRATOR");
+    ADMINISTRATOR("ADMINISTRATOR"),
+    SYSTEM("SYSTEM");
 
     override fun getAuthority(): String {
         return this.authority

@@ -1,22 +1,24 @@
 [versions]
 
 # Gradle wrapper
-wrapper = "7.6"
+wrapper = "8.4"
 
 # Plugins
-kotlin-plugin = "1.7.10"
+kotlin-plugin = "1.9.10"
 versions-plugin = "0.44.0"
 spring-dependency-management-plugin = "1.1.0"
-spring-boot-plugin = "3.0.0"
-graalvm-plugin = "0.9.19"
+spring-boot-plugin = "3.1.4"
+graalvm-plugin = "0.9.27"
 
 # Dependencies
-kotest = "5.5.4"
-kotest-spring = "1.1.2"
-kotlin-logging = "3.0.4"
-jjwt = "0.11.5"
+kotest = "5.7.2"
+kotest-spring = "1.1.3"
+kotlin-logging = "3.0.5"
+spring-cloud-dependencies = "2022.0.3"
+springdoc-openapi = "2.2.0"
+jjwt = "0.12.3"
 bouncy-castle = "1.70"
-blockhound = "1.0.6.RELEASE"
+blockhound = "1.0.8.RELEASE"
 
 [plugins]
 
@@ -30,8 +32,12 @@ graalvm = { id = "org.graalvm.buildtools.native", version.ref="graalvm-plugin" }
 [libraries]
 
 kotest = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest" }
+kotest-assertions-core = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
+kotest-property = { module = "io.kotest:kotest-property", version.ref = "kotest" }
 kotest-spring = { module = "io.kotest.extensions:kotest-extensions-spring", version.ref = "kotest-spring" }
 kotlin-logging = { module = "io.github.microutils:kotlin-logging", version.ref = "kotlin-logging" }
+spring-cloud-dependencies = { module = "org.springframework.cloud:spring-cloud-dependencies", version.ref="spring-cloud-dependencies" }
+springdoc-openapi = { module = "org.springdoc:springdoc-openapi-starter-webflux-ui", version.ref = "springdoc-openapi" }
 jjwt-api = { module = "io.jsonwebtoken:jjwt-api", version.ref = "jjwt" }
 jjwt-impl = { module = "io.jsonwebtoken:jjwt-impl", version.ref = "jjwt" }
 jjwt-jackson = { module = "io.jsonwebtoken:jjwt-jackson", version.ref = "jjwt" }
@@ -41,5 +47,7 @@ blockhound-junit = { module = "io.projectreactor.tools:blockhound-junit-platform
 
 [bundles]
 
+kotest = [ "kotest", "kotest-assertions-core", "kotest-property" ,"kotest-spring" ]
+spring-alt = [ "springdoc-openapi" ]
 jjwt = [ "jjwt-api", "jjwt-impl", "jjwt-jackson" ]
 blockhound = [ "blockhound", "blockhound-junit" ]

@@ -1,20 +1,18 @@
 package io.renegadelabs.canary.api.identities.controller
 
 import io.renegadelabs.canary.api.identities.controller.request.CreateSessionRequest
-import io.renegadelabs.canary.api.identities.domain.Session
-import io.renegadelabs.canary.api.identities.service.SessionService
+import io.renegadelabs.canary.api.identities.domain.TokenPair
+import io.renegadelabs.canary.api.identities.service.TokenIssuanceService
 import org.springframework.http.HttpHeaders
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Mono
-import reactor.kotlin.core.publisher.toMono
-import java.util.*
 
 @RestController
 @RequestMapping("/sessions")
-class SessionController(
-    private val sessionService: SessionService
+class TokenIssuanceController(
+    private val tokenIssuanceService: TokenIssuanceService
 ) {
 
     companion object {
@@ -24,15 +22,15 @@ class SessionController(
 
     @PreAuthorize("permitAll()")
     @PostMapping(POST_SESSION_REQUEST_MAPPING)
-    fun postSession(@RequestBody createSessionRequest: CreateSessionRequest): Mono<ResponseEntity<Session>> {
-        return this.sessionService.createSession(createSessionRequest.username, createSessionRequest.password)
+    fun postSession(@RequestBody createSessionRequest: CreateSessionRequest): Mono<ResponseEntity<TokenPair>> {
+        return this.tokenIssuanceService.createTokenPair(createSessionRequest.username, createSessionRequest.password)
             .map { ResponseEntity.ok(it) }
     }
 
     @PreAuthorize("hasAuthority('REFRESH')")
     @GetMapping(GET_SESSION_REFRESH_REQUEST_MAPPING)
-    fun refreshSession(@RequestHeader(HttpHeaders.AUTHORIZATION) authorizationHeader: String): Mono<ResponseEntity<Session>> {
-        return this.sessionService.refreshSession(authorizationHeader)
+    fun refreshSession(@RequestHeader(HttpHeaders.AUTHORIZATION) authorizationHeader: String): Mono<ResponseEntity<TokenPair>> {
+        return this.tokenIssuanceService.refreshTokenPair(authorizationHeader)
             .map { ResponseEntity.ok(it) }
     }
 }

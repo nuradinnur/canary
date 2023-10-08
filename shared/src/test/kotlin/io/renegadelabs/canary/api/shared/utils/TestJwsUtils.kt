@@ -8,6 +8,7 @@ import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.throwable.shouldHaveMessage
 import io.kotest.matchers.types.shouldBeInstanceOf
+import io.renegadelabs.canary.api.shared.util.CustomClaims
 import io.renegadelabs.canary.api.shared.util.JwsUtils
 import java.util.*
 
@@ -23,12 +24,12 @@ class TestJwsUtils: BehaviorSpec({
             then("it should be parsed successfully") {
                 val result = JwsUtils.toJws(validToken)
                 result.shouldNotBeNull()
-                result.body.shouldNotBeNull()
-                result.body.subject.shouldNotBeNull().shouldBe("testuser")
-                result.body.issuer.shouldBe("canary")
-                result.body.issuedAt.shouldBe(Date(1670383430000))
-                result.body.expiration.shouldBe(Date(4102444815000))
-                result.body["authorities"].shouldBeInstanceOf<Collection<String>>()
+                result.payload.shouldNotBeNull()
+                result.payload.subject.shouldNotBeNull().shouldBe("testuser")
+                result.payload.issuer.shouldBe("canary")
+                result.payload.issuedAt.shouldBe(Date(1670383430000))
+                result.payload.expiration.shouldBe(Date(4102444815000))
+                result.payload[CustomClaims.AUTHORITY].shouldBeInstanceOf<Collection<String>>()
             }
         }
 

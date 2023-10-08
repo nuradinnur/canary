@@ -29,7 +29,7 @@ class WebFluxErrorAttributes : DefaultErrorAttributes() {
             is JwtException ->
                 HttpStatus.UNAUTHORIZED
             is ResponseStatusException ->
-                HttpStatus.resolve(error.statusCode.value()).let { HttpStatus.INTERNAL_SERVER_ERROR }
+                HttpStatus.resolve(error.statusCode.value())?.let { HttpStatus.INTERNAL_SERVER_ERROR }!!
             else ->
                 HttpStatus.INTERNAL_SERVER_ERROR
         }

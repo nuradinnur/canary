@@ -1,4 +1,4 @@
-package io.renegadelabs.canary.api.shared.extensions
+package io.renegadelabs.canary.api.shared.utils.extensions
 
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jws
@@ -10,6 +10,10 @@ import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.types.shouldBeInstanceOf
 import io.renegadelabs.canary.api.shared.domain.Authorities
 import io.renegadelabs.canary.api.shared.util.JwsUtils
+import io.renegadelabs.canary.api.shared.util.extensions.getAuthorities
+import io.renegadelabs.canary.api.shared.util.extensions.hasValidRefreshClaims
+import io.renegadelabs.canary.api.shared.util.extensions.hasValidSessionClaims
+import io.renegadelabs.canary.api.shared.util.extensions.isExpired
 
 class TestJwsExtensions: BehaviorSpec({
 

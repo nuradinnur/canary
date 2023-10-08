@@ -28,24 +28,30 @@ class IdentityServiceImpl(
 
     private val database: MutableMap<String, Identity> = HashMap()
 
+    init {
+        // TODO("Create system identity on first launch")
+    }
+
     override fun createIdentity(username: String, password: String): Mono<Void> {
-        return this.database.containsKey(username).toMono()
-            .map { exists ->
-                if (exists) throw IdentityAlreadyExistsException(this.messages.getMessage("exceptions.identity-already-exists"))
-                else Identity.create(
+        return this.database.containsKey(username).toMono().handle<Identity> { exists, sink ->
+            if (exists) sink.error(
+                IdentityAlreadyExistsException(this.messages.getMessage("exceptions.identity-already-exists"))
+            )
+            else sink.next(
+                Identity.create(
                     id = this.database.size.toLong(),
                     username = username,
                     password = passwordEncoder.encode(password),
                     authorities = setOf(Authorities.USER)
                 )
-            }.flatMap { this.updateUserDetails(it) }
+            )
+        }.flatMap { this.updateUserDetails(it) }
     }
 
     override fun getIdentityById(id: Long): Mono<Identity> {
-        return Mono.justOrEmpty(
-            this.database.firstNotNullOfOrNull {
-                it.value.takeIf { identity -> identity.id == id }
-            })
+        return Mono.justOrEmpty(this.database.firstNotNullOfOrNull {
+            it.value.takeIf { identity -> identity.getId() == id }
+        })
             .switchIfEmpty(Mono.error(IdentityNotFoundException(this.messages.getMessage("exceptions.identity-not-found"))))
     }
 
@@ -56,12 +62,14 @@ class IdentityServiceImpl(
     }
 
     override fun updateIdentity(identity: Identity): Mono<Void> {
-        return this.database.containsKey(identity.username).toMono()
-            .map { exists ->
-                if (!exists) throw IdentityNotFoundException(this.messages.getMessage("exceptions.identity-not-found"))
-                else identity
-            }
-            .flatMap { this.updateUserDetails(it) }
+        return this.database.containsKey(identity.username).toMono().handle<Identity> { exists, sink ->
+            if (!exists) sink.error(
+                IdentityNotFoundException(this.messages.getMessage("exceptions.identity-not-found"))
+            )
+            else sink.next(
+                identity
+            )
+        }.flatMap { this.updateUserDetails(it) }
     }
 
     @Deprecated(
@@ -71,9 +79,17 @@ class IdentityServiceImpl(
     )
     override fun findByUsername(username: String): Mono<UserDetails> {
         return this.reactiveUserDetailsCache.getUserDetails(username)
-            .switchIfEmpty(Mono.defer { this.database[username].toMono() })
-            .switchIfEmpty(Mono.error(IdentityNotFoundException(this.messages.getMessage("exceptions.identity-not-found", arrayOf(username)))))
-            .flatMap { userDetails -> this.reactiveUserDetailsCache.putUserDetails(userDetails).then(Mono.just(userDetails)) }
+            .switchIfEmpty(Mono.defer { this.database[username].toMono() }).switchIfEmpty(
+                Mono.error(
+                    IdentityNotFoundException(
+                        this.messages.getMessage(
+                            "exceptions.identity-not-found", arrayOf(username)
+                        )
+                    )
+                )
+            ).flatMap { userDetails ->
+                this.reactiveUserDetailsCache.putUserDetails(userDetails).then(Mono.just(userDetails))
+            }
     }
 
     override fun setMessageSource(messageSource: MessageSource) {

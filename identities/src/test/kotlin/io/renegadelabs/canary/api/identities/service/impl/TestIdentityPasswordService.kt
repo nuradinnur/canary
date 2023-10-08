@@ -35,11 +35,16 @@ class TestIdentityPasswordService(
                     val publisher = identityPasswordService.updatePassword("serendipitous1", "achievebraidoutfield", "newPassword123")
 
                     StepVerifier.create(publisher)
-                        .consumeNextWith {result ->
-                            passwordEncoder.matches("newPassword123", result.password)
-                        }
+                        .expectNextCount(0)
                         .verifyComplete()
                         .shouldBeLessThan(Duration.ofMillis(250))
+
+                    val verification = identityService.getIdentityByUsername("dancingmonkey")
+
+                    StepVerifier.create(verification)
+                        .consumeNextWith { result ->
+                            passwordEncoder.matches("newPassword123", result.password)
+                        }
                 }
             }
         }
@@ -80,11 +85,16 @@ class TestIdentityPasswordService(
                     val publisher = identityPasswordService.updatePassword("dancingmonkey", "monkeysarecool1", "newPassword123")
 
                     StepVerifier.create(publisher)
-                        .consumeNextWith {result ->
-                            passwordEncoder.matches("newPassword123", result.password)
-                        }
+                        .expectNextCount(0)
                         .verifyComplete()
                         .shouldBeLessThan(Duration.ofMillis(250))
+
+                    val verification = identityService.getIdentityByUsername("dancingmonkey")
+
+                    StepVerifier.create(verification)
+                        .consumeNextWith { result ->
+                            passwordEncoder.matches("newPassword123", result.password)
+                        }
                 }
             }
         }

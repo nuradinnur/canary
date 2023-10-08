@@ -20,8 +20,8 @@ class UserDetailsCacheImpl(
         return this.cache[username, UserDetails::class.java].toMono()
     }
 
-    override fun putUserDetails(user: UserDetails): Mono<Void> {
-        this.cache[user.username] = user
+    override fun putUserDetails(userDetails: UserDetails): Mono<Void> {
+        this.cache[userDetails.username] = userDetails
         return Mono.empty()
     }
 

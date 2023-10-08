@@ -1,8 +1,9 @@
 {
 	"info": {
-		"_postman_id": "43049537-62dd-4242-a36c-8c1c38c1a3c9",
+		"_postman_id": "329f7734-c314-4cb3-875c-1147d32c812f",
 		"name": "Canary",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "17107050"
 	},
 	"item": [
 		{
@@ -185,7 +186,7 @@
 					"response": []
 				},
 				{
-					"name": "Get identity",
+					"name": "Get identity for session",
 					"request": {
 						"auth": {
 							"type": "bearer",

@@ -7,7 +7,7 @@ build:
     - image: renegadelabs.io/canary-identities
       custom:
         buildCommand:
-          USE_BUILDPACK=paketobuildpacks/builder:base
+          USE_BUILDPACK=paketobuildpacks/builder:tiny
           USE_NATIVE_COMPILER=false
           ../../../gradlew bootBuildImage
           -p ../../../identities

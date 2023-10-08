@@ -45,23 +45,35 @@ class WebFluxConfiguration(
     @Bean
     fun securityWebFilterChain(http: ServerHttpSecurity): SecurityWebFilterChain {
         return http
-            .exceptionHandling()
-            .authenticationEntryPoint { exchange, _ ->
-                Mono.fromRunnable { exchange.response.statusCode = HttpStatus.UNAUTHORIZED }
+            .exceptionHandling {
+                exceptionHandlingCustomizer ->
+                    exceptionHandlingCustomizer.authenticationEntryPoint { exchange, _ ->
+                        Mono.fromRunnable { exchange.response.statusCode = HttpStatus.UNAUTHORIZED }
+                    }
+                    exceptionHandlingCustomizer.accessDeniedHandler { exchange, _ ->
+                        Mono.fromRunnable { exchange.response.statusCode = HttpStatus.FORBIDDEN }
+                    }
             }
-            .accessDeniedHandler { exchange, _ ->
-                Mono.fromRunnable { exchange.response.statusCode = HttpStatus.FORBIDDEN }
+            .httpBasic {
+                httpBasicCustomizer -> httpBasicCustomizer.disable()
             }
-            .and()
-            .httpBasic().disable()
-            .formLogin().disable()
-            .csrf().disable()
-            .anonymous().disable()
+            .formLogin {
+                formLoginCustomizer -> formLoginCustomizer.disable()
+            }
+            .csrf {
+                csrfCustomizer -> csrfCustomizer.disable()
+            }
+            .anonymous {
+                anonymousCustomizer -> anonymousCustomizer.disable()
+            }
             .authenticationManager(this.reactiveAuthenticationManager)
             .securityContextRepository(this.serverSecurityContextRepository)
-            .authorizeExchange()
-            .anyExchange().permitAll()
-            .and().build()
+            .authorizeExchange {
+                authorizeExchangeCustomizer -> authorizeExchangeCustomizer
+                .anyExchange()
+                .permitAll()
+            }
+            .build()
     }
 
     override fun addCorsMappings(registry: CorsRegistry) {

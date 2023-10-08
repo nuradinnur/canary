@@ -13,6 +13,10 @@ pluginManagement {
     }
 }
 
+plugins {
+    id("org.gradle.toolchains.foojay-resolver-convention") version("0.7.0")
+}
+
 include("shared")
 include("service-starter")
 include("identities")

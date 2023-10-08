@@ -16,28 +16,26 @@ import reactor.core.publisher.Mono
 @Service
 @Primary
 class IdentityPasswordServiceImpl(
-    private val passwordEncoder: PasswordEncoder,
-    private val identityService: IdentityService
-): IdentityPasswordService, MessageSourceAware {
+    private val passwordEncoder: PasswordEncoder, private val identityService: IdentityService
+) : IdentityPasswordService, MessageSourceAware {
 
     private lateinit var messages: MessageSourceAccessor
 
     override fun validatePassword(username: String, password: String): Mono<Void> {
         return this.identityService.getIdentityByUsername(username)
-            .onErrorMap { error -> BadCredentialsException(this.messages.getMessage("exceptions.bad-credentials"), error) }
-            .map { this.passwordEncoder.matches(password, it.password) }
-            .filter { matches -> matches }
+            .onErrorMap { BadCredentialsException(this.messages.getMessage("exceptions.bad-credentials"), it) }
+            .map { this.passwordEncoder.matches(password, it.password) }.filter { matches -> matches }
             .switchIfEmpty(Mono.error(BadCredentialsException(this.messages.getMessage("exceptions.bad-credentials"))))
             .then()
     }
 
     @Suppress("DEPRECATION")
-    override fun updatePassword(username: String, password: String, newPassword: String): Mono<Identity> {
-        val identity = this.identityService.getIdentityByUsername(username).cache()
-        return identity.map { this.passwordEncoder.matches(password, it.password) }
-            .filter { matches -> matches }
+    override fun updatePassword(username: String, password: String, newPassword: String): Mono<Void> {
+        val identity = this.identityService.getIdentityByUsername(username)
+            .onErrorMap { BadCredentialsException(this.messages.getMessage("exceptions.bad-credentials"), it) }.cache()
+        return identity.map { this.passwordEncoder.matches(password, it.password) }.filter { matches -> matches }
             .switchIfEmpty(Mono.error(BadCredentialsException(this.messages.getMessage("exceptions.bad-credentials"))))
-            .then(identity.flatMap { this.updatePassword(it, newPassword).cast(Identity::class.java) })
+            .then(identity).flatMap { this.updatePassword(it, newPassword) }.then()
     }
 
     @Deprecated(
@@ -46,8 +44,7 @@ class IdentityPasswordServiceImpl(
         replaceWith = ReplaceWith("updatePassword(identity, newPassword)")
     )
     override fun updatePassword(user: UserDetails, newPassword: String): Mono<UserDetails> {
-        return Mono.just(user)
-            .cast(Identity::class.java)
+        return Mono.just(user).cast(Identity::class.java)
             .map { it.copy(password = this.passwordEncoder.encode(newPassword)) }
             .flatMap { identityService.updateIdentity(it).thenReturn(it) }
     }

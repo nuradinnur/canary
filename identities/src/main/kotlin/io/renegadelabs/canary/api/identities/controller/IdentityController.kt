@@ -45,7 +45,7 @@ class IdentityController(
             .map {
                 ResponseEntity.created(UriComponentsBuilder.fromPath(this.contextPath)
                     .path(GET_IDENTITY_REQUEST_MAPPING_PARAMETERIZED)
-                    .buildAndExpand(it.id)
+                    .buildAndExpand(it.getId())
                     .toUri()
                 ).build()
             }
