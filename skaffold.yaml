@@ -5,8 +5,8 @@ metadata:
 requires:
 - path: ./deployment/applications/identities
   activeProfiles:
-  - name: prod
+  - name: staging
     activatedBy:
-    - prod
+    - staging
 profiles:
-- name: prod
+- name: staging

@@ -1,0 +1,4 @@
+spring:
+  cloud:
+    environment:
+      enabled: true

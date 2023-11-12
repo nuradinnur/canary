@@ -1,0 +1,9 @@
+{
+  "properties": [
+    {
+      "name": "spring.cloud.environment.enabled",
+      "type": "java.lang.String",
+      "description": "Enable/disable cloud environment configuration."
+    }
+  ]
+}

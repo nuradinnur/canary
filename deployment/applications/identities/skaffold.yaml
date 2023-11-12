@@ -10,13 +10,13 @@ build:
           USE_BUILDPACK=paketobuildpacks/builder:tiny
           USE_NATIVE_COMPILER=false
           ../../../gradlew bootBuildImage
-          -p ../../../identities
+          -p ../../../services/identities
           --stacktrace
           --console=verbose
         dependencies:
           paths:
-            - ../../../identities/src/main/**
-            - ../../../shared/src/main/**
+            - ../../../services/identities/src/main/**
+            - ../../../services/shared/src/main/**
 deploy:
   helm:
     releases:
@@ -27,7 +27,7 @@ deploy:
         namespace: canary
         createNamespace: true
 profiles:
-  - name: prod
+  - name: staging
     patches:
       - op: replace
         path: /build/artifacts/0/custom/buildCommand
@@ -35,7 +35,7 @@ profiles:
           USE_BUILDPACK=paketobuildpacks/builder:tiny
           USE_NATIVE_COMPILER=true
           ../../../gradlew bootBuildImage
-          -p ../../../identities
+          -p ../../../services/identities
           --stacktrace
           --console=verbose
       - op: add

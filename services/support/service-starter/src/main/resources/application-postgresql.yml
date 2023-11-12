@@ -1,0 +1,10 @@
+spring:
+  flyway:
+    url: jdbc:postgresql://dbuser:changeit@localhost:5432/canary
+    schemas: identities
+    table: flyway_schema_history
+    baseline-on-migrate: true
+    fail-on-missing-locations: true
+    locations: classpath:db/migration/postgresql
+  r2dbc:
+    url: r2dbc:postgresql://dbuser:changeit@localhost:5432/canary?schema=identities

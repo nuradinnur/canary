@@ -1,3 +1,4 @@
+
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import io.spring.gradle.dependencymanagement.dsl.DependencyManagementExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
@@ -51,39 +52,108 @@ tasks.withType<DependencyUpdatesTask> {
     }
 }
 
+configure(subprojects) {
+    apply(plugin = "jacoco")
+    apply(plugin = rootProject.project.libs.plugins.kotlin.jvm.get().pluginId)
+    apply(plugin = rootProject.project.libs.plugins.kotlin.spring.get().pluginId)
+    apply(plugin = rootProject.project.libs.plugins.spring.dependency.management.get().pluginId)
+
+    configure<KotlinProjectExtension> {
+        jvmToolchain {
+            languageVersion.set(JavaLanguageVersion.of(JVM_TARGET_VERSION))
+        }
+    }
+
+    configure<DependencyManagementExtension> {
+        imports {
+            mavenBom(SpringBootPlugin.BOM_COORDINATES)
+            mavenBom(rootProject.libs.spring.cloud.dependencies.get().toString())
+        }
+    }
+
+    tasks.withType<KotlinCompile> {
+        kotlinOptions {
+            freeCompilerArgs = listOf("-Xjsr305=strict")
+            jvmTarget = JVM_TARGET_VERSION
+        }
+    }
+
+    tasks.withType<Test> {
+        useJUnitPlatform()
+        jvmArgs = listOf("-XX:+AllowRedefinitionToAddDeleteMethods")
+    }
+
+    tasks.withType<JacocoReport> {
+        dependsOn(tasks.withType<Test>())
+        reports {
+            xml.required = true
+        }
+        doLast {
+            println("View code coverage report at:")
+            println("file://${layout.buildDirectory.get()}/reports/jacoco/test/html/index.html")
+        }
+    }
+
+    tasks.withType<JacocoCoverageVerification> {
+        dependsOn(tasks.withType<JacocoReport>())
+        violationRules {
+            rule {
+                limit {
+                    counter = "BRANCH"
+                    minimum = 0.80.toBigDecimal()
+                }
+                limit {
+                    counter = "LINE"
+                    minimum = 0.80.toBigDecimal()
+                }
+            }
+        }
+    }
+
+    tasks.getByName("check") {
+        dependsOn(tasks.withType<JacocoReport>())
+        dependsOn(tasks.withType<JacocoCoverageVerification>())
+    }
+}
+
+configure(setOf(project(":shared"))) {
+    apply(plugin = "java-test-fixtures")
+}
+
 configure(subprojects - project(":shared")) {
     apply(plugin = rootProject.project.libs.plugins.spring.boot.get().pluginId)
     apply(plugin = rootProject.project.libs.plugins.graalvm.get().pluginId)
 
+    setOf(
+        "aotClasses",
+        "aotTestClasses",
+        "compileAotJava",
+        "compileAotKotlin",
+        "compileAotTestJava",
+        "compileAotTestKotlin",
+        "processAot",
+        "processTestAot",
+        "processAotResources",
+        "processAotTestResources",
+    ).forEach {
+        tasks.named(it) {
+            enabled = BUILD_NATIVE_IMAGE
+        }
+    }
+
     tasks.withType<BootBuildImage> {
-        println()
-        println("----------------------------------------------")
-        println("Building Spring Boot image with configuration:")
-        println("----------------------------------------------")
-
         imageName.set(FULLY_QUALIFIED_IMAGE_NAME)
-        println("Writing image as \"$FULLY_QUALIFIED_IMAGE_NAME\"")
-
         publish.set(PUSH_IMAGE_TO_REPOSITORY)
-        if (PUSH_IMAGE_TO_REPOSITORY) println("Resulting image will be pushed to repository: $IMAGE_REPOSITORY")
-
         builder.set(USE_BUILDPACK)
-        println("Using Paketo builder: $USE_BUILDPACK")
-
-        val buildpackLayers = buildList {
+        buildpacks.set(buildList {
             add("gcr.io/paketo-buildpacks/ca-certificates:latest")
             add("gcr.io/paketo-buildpacks/bellsoft-liberica:latest")
             add("gcr.io/paketo-buildpacks/syft:latest")
             add("gcr.io/paketo-buildpacks/executable-jar:latest")
             add("gcr.io/paketo-buildpacks/spring-boot:latest")
             if (BUILD_NATIVE_IMAGE) add("gcr.io/paketo-buildpacks/native-image:latest")
-        }
-        buildpacks.set(buildpackLayers)
-        println("Using buildpack layers: {")
-        buildpackLayers.forEach { println("\t\"$it\"") }
-        println("}")
-
-        val bootBuildImageEnvironment = buildMap {
+        })
+        environment.set(buildMap {
             put("BP_JVM_VERSION", JVM_TARGET_VERSION)
             if (BUILD_NATIVE_IMAGE) {
                 put("BP_NATIVE_IMAGE", true.toString())
@@ -95,46 +165,7 @@ configure(subprojects - project(":shared")) {
                     ).joinToString(" ")
                 )
             }
-        }
-        environment.set(bootBuildImageEnvironment)
-        println("Spring Boot plugin environment: {")
-        bootBuildImageEnvironment.entries.forEach { println("\t\"${it.key}\": \"${it.value}\"") }
-        println("}")
-
+        })
         verboseLogging.set(true)
-        println("Verbose logging enabled")
-    }
-}
-
-subprojects {
-    apply(plugin = rootProject.project.libs.plugins.kotlin.jvm.get().pluginId)
-    apply(plugin = rootProject.project.libs.plugins.kotlin.spring.get().pluginId)
-    apply(plugin = rootProject.project.libs.plugins.spring.dependency.management.get().pluginId)
-
-    extensions.configure(KotlinProjectExtension::class) {
-        jvmToolchain {
-            languageVersion.set(JavaLanguageVersion.of(JVM_TARGET_VERSION))
-        }
-    }
-
-    tasks.withType(KotlinCompile::class).configureEach {
-        kotlinOptions {
-            freeCompilerArgs = listOf("-Xjsr305=strict")
-            jvmTarget = JVM_TARGET_VERSION
-        }
-    }
-
-    tasks.withType(Test::class).configureEach {
-        useJUnitPlatform()
-
-        // Ensure that BlockHound tests run on JDK 13+. For details, see:
-        // https://github.com/reactor/BlockHound/issues/33
-    }
-
-    configure<DependencyManagementExtension> {
-        imports {
-            mavenBom(SpringBootPlugin.BOM_COORDINATES)
-            mavenBom(rootProject.libs.spring.cloud.dependencies.get().toString())
-        }
     }
 }
